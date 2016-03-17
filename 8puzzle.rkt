@@ -152,7 +152,6 @@
              )))
 ;-----------------------------------------------------------------------------------------------------------------
 ; runs best first search on given start node
-; DOES NOT WORK I DON'T KNOW WHY
 (define bestFirst (lambda (startState goalState)
                     (display "Starting search...")
                     (newline)
@@ -172,7 +171,6 @@
               ))
 ;-----------------------------------------------------------------------------------------------------------------
 ; runs best first search on given start node
-; DOES NOT WORK I DON'T KNOW WHY
 (define hillClimbing (lambda (startState goalState)
                     (display "Starting search...")
                     (newline)
@@ -190,7 +188,6 @@
               )))
 ;-----------------------------------------------------------------------------------------------------------------
 ; runs best first search on given start node
-; DOES NOT WORK I DON'T KNOW WHY
 (define beamSearch (lambda (startState goalState)
                     (display "Starting search...")
                     (newline)

@@ -13,21 +13,18 @@
 ; Representation:
 ; single axiom -> (#t x)
 ; negation of axiom -> (#f x)
-; single hypothesis -> ( ((#t x) (#f x)))
+; single hypothesis -> ( ((#t x) (#f x)) (1))
 ; first item is the list of axioms
 ; second is a list of the number in which it was added to proof
 ; is just a list of axioms
-; all hypotheses -> list of them ( ((#t x) (#f x)) ((#t a) (#f x)) )
+; all hypotheses -> list of them ( (((#t x) (#f x)) (1)) (((#t a) (#f x)) (2)) )
 
 
-(define rain-axioms '(((#f r) (#t u)) ((#f u) (#f w)) ((#t r) (#f w))) )
-(define rain-contra '(((#t w))))
+(define rain-axioms '((((#f r) (#t u)) (1)) (((#f u) (#f w)) (2)) (((#t r) (#f w)) (3))) )
+(define rain-contra '((((#t w)) (4))) )
 
-(define test1-axioms '(((#f p) (#t q)) ((#f p) (#t r))))
-(define test1-contra '(((#t p)) ((#f q) (#f r))))
-
-(define epp-axiom '(((#f p) (#t q)) ((#t r) (#t s)) ((#t s) (#f t)) ((#f q) (#t s)) ((#f s)) ((#t w) (#t t)) ((#t p) (#f r) (#t u))))
-(define epp-contra '(((#f u) (#f w))))
+(define test1-axioms '((((#f p) (#t q)) (1)) (((#f p) (#t r)) (2))))
+(define test1-contra '((((#t p)) (3)) (((#f q) (#f r)) (4))))
 ;------------------------------------------------------------------------------------------
 ;      Simple stuff
 ;------------------------------------------------------------------------------------------
@@ -96,11 +93,6 @@
 ; perform resolution on two full hypotheses (with numbers)
 ; assumes that the two are legally able to be calculated
 (define resolutionCalculator (lambda (hyp1 hyp2 count)
-                               ;(display "resolving: ")
-                               ;(display hyp1)
-                               ;(display " ___ ")
-                               ;(display hyp2)
-                               ;(newline)
            (list (clearOps (removeDupsSimple (append (car hyp1) (car hyp2))))
                                 (list count (caadr hyp1) (caadr hyp2)))
                      ))
@@ -171,9 +163,8 @@
                  ((null? notChecked) calculated)
                  (else;try not to look at this
                     (resolutionItHelper (cdr notChecked) (append checked (list (car notChecked)))
-                                        (append (secondHelper (car notChecked) (cdr notChecked)  count) calculated)
-                          ;(append (secondHelper (car notChecked) (append checked (cdr notChecked)) count) calculated)
-                             (+ count (myLeng (secondHelper (car notChecked) (cdr notChecked)  count))))
+                          (append (secondHelper (car notChecked) (append checked (cdr notChecked)) count) calculated)
+                             (+ count (myLeng (secondHelper (car notChecked) (append checked (cdr notChecked)) count))))
              ))))
 ; returns a list of resolution of everything in list wih item
 (define secondHelper (lambda (item lst count)
@@ -191,7 +182,7 @@
 ; takes hypotheses and conclusions in 2 vars
 ; these are combined into one list b/c reasons
 (define runner (lambda (knownHyps conc)
-                 (runnerMain (number (append knownHyps conc) 1) (myLeng (append knownHyps conc)))
+                 (runnerMain (append knownHyps conc) (myLeng (append knownHyps conc)))
                  ))
 ; takes a list of hypotheses and the count of how many there are
 ; loops trying to generate new hypotheses and reaches () or doesn't make any more 
@@ -203,14 +194,11 @@
                    (else
                    (runnerMain newStuff (myLeng newStuff))))
                      ))
-;------------------------------------------------------------------------------------------
-; gives numbers given as input in runner
-;each item is put in a list with the last item being a list holding its hypothesis number
-(define number (lambda (lst count)
+
+(define number (lambda (lst)
                  (cond
                    ((null? lst) '())
-                   ((cons (list (car lst) (cons count '())) (number (cdr lst) (+ 1 count))))
-                 )))
+                 ))
 ;------------------------------------------------------------------------------------------
 ; nicely prints the list with line nums and where they were generated from
 (define printList (lambda (lst)
